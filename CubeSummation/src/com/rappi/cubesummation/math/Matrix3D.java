@@ -2,6 +2,8 @@ package com.rappi.cubesummation.math;
 
 import java.io.Serializable;
 
+import com.rappi.cubesummation.exceptions.ApplicationException;
+
 /**
  * Clase que se usa para realizar las operaciones sobre la sumatoria de cubos
  * @author sergioalexandermendietaarias
@@ -12,12 +14,25 @@ public class Matrix3D implements Serializable
 	private static final long serialVersionUID = 323897683169943286L;
 	private float[][][] points;
 	private int depth;
+	private int length;
+	private int sizeOperations;
 	
 	public Matrix3D(int depth) throws NegativeArraySizeException
 	{
 		this.depth = depth;
 		points = new float[this.depth][this.depth][this.depth];
+		sizeOperations = 0;
 		zero();
+	}
+	
+	public Matrix3D(int depth, int length) 
+	{
+		super();
+		this.depth = depth;
+		this.length = length;
+		points = new float[this.depth][this.depth][this.depth];
+		zero();
+		sizeOperations = 0;
 	}
 	
 	public void zero()
@@ -28,8 +43,13 @@ public class Matrix3D implements Serializable
 					points[i][j][k] = 0;
 	}
 	
-	public void update(int x,int y,int z,float w)
+	public void update(int x,int y,int z,float w)throws ApplicationException
 	{
+		if(this.sizeOperations >= this.length)
+		{
+			throw new ApplicationException("ERR_003");
+		}
+		
 		if(x > 0)
 			x -= 1;
 		
@@ -41,8 +61,13 @@ public class Matrix3D implements Serializable
 		points[x][y][z] = w;
 	}
 	
-	public float sum(int x1,int y1,int z1,int x2,int y2,int z2)
+	public float sum(int x1,int y1,int z1,int x2,int y2,int z2) throws ApplicationException
 	{
+		if(this.sizeOperations >= this.length)
+		{
+			throw new ApplicationException("ERR_003");
+		}
+		
 		if(x1 > 0)
 			x1 -= 1;
 		
@@ -71,6 +96,26 @@ public class Matrix3D implements Serializable
 		return sum;
 	}
 	
+	public int getLength() {
+		return length;
+	}
+
+	public void setLength(int length) {
+		this.length = length;
+	}
+	
+	public int getSizeOperations() {
+		return sizeOperations;
+	}
+
+	public void setSizeOperations(int sizeOperations) 
+	{
+		if(this.sizeOperations < this.length)
+		{
+			this.sizeOperations += sizeOperations;
+		}
+	}
+
 	@Override
 	public String toString()
 	{
