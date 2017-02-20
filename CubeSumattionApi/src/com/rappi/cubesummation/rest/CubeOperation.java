@@ -19,6 +19,7 @@ import com.rappi.cubesummation.dto.ResponseStandardDTO;
 import com.rappi.cubesummation.ejb.CubeManagerRemote;
 import com.rappi.cubesummation.managers.MessagesManager;
 import com.rappi.cubesummation.models.RequestCreate;
+import com.rappi.cubesummation.models.RequestQuery;
 import com.rappi.cubesummation.models.RequestUpdate;
 import com.rappi.cubesummation.models.StandardMessage;
 import com.rappi.cubesummation.utilidades.Utilidades;
@@ -65,13 +66,11 @@ public class CubeOperation
 		
 		try
 		{	
-			
-			/*
-			ResponseStandardDTO responseEjb = cubeManager.update(coordinates);
-			response.setMessage(responseEjb.getMessageResponse().getCode(), 
-					messages.getSpecificMessage(responseEjb.getMessageResponse().getCode()));
-			*/
-			status = Response.Status.OK;
+			ResponseStandardDTO responseCreate = cubeManager.create(request.getDepth(), request.getOperationsLength());
+			if(responseCreate.getMessageResponse().getCode().startsWith("APP"))
+				status = Response.Status.OK;
+			else
+				status = Response.Status.INTERNAL_SERVER_ERROR;
 		}
 		catch (Exception e) 
 		{
@@ -113,6 +112,55 @@ public class CubeOperation
 							).createCoordinateDTO();
 			
 			ResponseStandardDTO responseEjb = cubeManager.update(coordinates);
+			response.setMessage(responseEjb.getMessageResponse().getCode(), 
+					messages.getSpecificMessage(responseEjb.getMessageResponse().getCode()));
+			status = Response.Status.OK;
+		}
+		catch (Exception e) 
+		{
+			System.out.println(e.getMessage());
+			status = Response.Status.INTERNAL_SERVER_ERROR;
+			response.setMessage("100", messages.getSpecificMessage("APP_100"));
+		}
+		
+		return generateResponse(false, status, response, producer); 
+	}
+	
+	@PUT @Path("/query")
+	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	@Consumes({"application/xml", "application/json"})
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	public Response query(@Context HttpHeaders headers,RequestQuery request) throws JSONException  
+	{
+		Status status = null;
+		StandardMessage response = new StandardMessage();
+		String headerAccept = getFormatAccept(headers);
+		String producer = null;
+		
+		if(headerAccept != null)
+			producer = getProducer(headerAccept);
+		else
+			return generateResponse(true, Status.INTERNAL_SERVER_ERROR, null, null);
+		
+		if(producer == null)
+			return generateResponse(true, Status.INTERNAL_SERVER_ERROR, null, null);
+		
+		try
+		{
+			
+			CoordinateDTO coordinateOrigin = new CoordinateDTO.CoordinateDTOBuilder(
+					request.getOrigin().getX(),
+					request.getOrigin().getY(),
+					request.getOrigin().getZ()
+					).createCoordinateDTO();
+			
+			CoordinateDTO coordinatePos = new CoordinateDTO.CoordinateDTOBuilder(
+					request.getPosition().getX(),
+					request.getPosition().getY(),
+					request.getPosition().getZ()
+					).createCoordinateDTO();
+			
+			ResponseStandardDTO responseEjb = cubeManager.query(coordinateOrigin, coordinatePos);
 			response.setMessage(responseEjb.getMessageResponse().getCode(), 
 					messages.getSpecificMessage(responseEjb.getMessageResponse().getCode()));
 			status = Response.Status.OK;

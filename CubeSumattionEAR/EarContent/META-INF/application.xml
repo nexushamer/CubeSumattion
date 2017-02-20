@@ -10,4 +10,10 @@
       <context-root>CubeSumattionApi</context-root>
     </web>
   </module>
+  <module>
+    <web>
+      <web-uri>CubeSummationWeb.war</web-uri>
+      <context-root>CubeSummationWeb</context-root>
+    </web>
+  </module>
 </application>

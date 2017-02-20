@@ -64,6 +64,13 @@ public class CoordinateDTO implements Serializable
 			this.z = z;
 		}
 		
+		public CoordinateDTOBuilder(CoordinateDTO cordinate)
+		{
+			this.x = cordinate.x;
+			this.y = cordinate.y;
+			this.z = cordinate.z;
+		}
+		
 		public CoordinateDTOBuilder value(float value)
 		{
 			this.value = value;

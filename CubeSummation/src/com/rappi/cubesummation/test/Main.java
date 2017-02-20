@@ -7,7 +7,7 @@ public class Main
 {
 	public static void main(String[] args)
 	{
-		Matrix3D matrix = new Matrix3D(-1);
+		Matrix3D matrix = new Matrix3D(4,4);
 		
 		try
 		{

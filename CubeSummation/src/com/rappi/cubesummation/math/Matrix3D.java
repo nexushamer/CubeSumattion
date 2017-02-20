@@ -64,9 +64,10 @@ public class Matrix3D implements Serializable
 	public float sum(int x1,int y1,int z1,int x2,int y2,int z2) throws ApplicationException
 	{
 		if(this.sizeOperations >= this.length)
-		{
 			throw new ApplicationException("ERR_003");
-		}
+		
+		if(this.depth < x2 || this.depth < y2 || this.depth <2)
+			throw new ApplicationException("ERR_004");
 		
 		if(x1 > 0)
 			x1 -= 1;
